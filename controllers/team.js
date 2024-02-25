@@ -144,6 +144,14 @@ exports.updateTeam = async(req,res) => {
                 }
             }
         }
+        if(team.member3 && !teamData.member3){
+            team.set(member3, undefined);
+            await team.save();
+        }
+        if(team.member4 && !teamData.member4){
+            team.set(member4, undefined);
+            await team.save();
+        }
         team.set(teamData);
         result = await team.save()
         console.log(teamData)
@@ -227,10 +235,10 @@ exports.leaveTeam = async(req,res) => {
             team.set(role, undefined);
             // Save the changes to the database
             await team.save();
+            return res.status(200).json({ status: "Successfully left the team", team});
         } else {
             return res.status(404).json({ status: "Member not found in any role" });
         }
-        return res.status(200).json({ status: "Successfully left the team", team});
     } catch(error){
         console.log(error)
         return res.status(500).json(error.message)
