@@ -17,9 +17,9 @@ exports.createTeam = async(req,res) => {
         }
         memberids = []
         leader = await Member.findOne({email: req.member.email})
-        memberids.push(leader._id)
+        memberids.push(leader._id.toString())
         member2 = await Member.findOne({email: member2Email})
-        memberids.push(member2._id)
+        memberids.push(member2._id.toString())
         if(!member2){
             return res.status(400).json({error:"Please create second member's accounts first"})
         }
@@ -32,7 +32,7 @@ exports.createTeam = async(req,res) => {
             member3 = await Member.findOne({email: req.body.member3Email})
             if(member3){
                 teamEntry.member3 = member3._id
-                memberids.push(member3._id)
+                memberids.push(member3._id.toString())
             } else{
                 return res.status(400).json({error:"Please create third member's accounts first"})
             }
@@ -41,14 +41,13 @@ exports.createTeam = async(req,res) => {
             member4 = await Member.findOne({email: req.body.member4Email})
             if(member4){
                 teamEntry.member4 = member4._id
-                memberids.push(member4._id)
+                memberids.push(member4._id.toString())
             } else {
                 return res.status(400).json({error:"Please create fourth member's accounts first"})
             }
         }
         console.log(memberids)
-        for (const memberId of memberids) {
-            const id = mongoose.Types.ObjectId(memberId);
+        for (const id of memberids) {
             clashingTeam = await Team.findOne({
                 $or: [
                     { leader: id },
