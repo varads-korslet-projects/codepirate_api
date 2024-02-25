@@ -46,6 +46,10 @@ exports.createTeam = async(req,res) => {
                 return res.status(400).json({error:"Please create fourth member's accounts first"})
             }
         }
+        const memberset = new Set(memberids);
+        if(memberset.size != memberids.length){
+            return res.status(409).json({error:"Duplicate members detected in request"})
+        }
         for (const id of memberids) {
             clashingTeam = await Team.findOne({
                 $or: [
@@ -127,6 +131,10 @@ exports.updateTeam = async(req,res) => {
             } else {
                 return res.status(404).json({error: "Member 4 hasn't registered"})
             }
+        }
+        const memberset = new Set(memberids);
+        if(memberset.size != memberids.length){
+            return res.status(409).json({error:"Duplicate members detected in request"})
         }
         for (const id of memberids) {
             clashingTeam = await Team.findOne({
