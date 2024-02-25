@@ -17,7 +17,7 @@ exports.createTeam = async(req,res) => {
         }
         memberids = []
         leader = await Member.findOne({email: req.member.email})
-        memberids.push(req.member._id) 
+        memberids.push(leader._id) 
         member2 = await Member.findOne({email: member2Email})
         memberids.push(member2._id)
         if(!member2){
