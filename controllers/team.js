@@ -184,7 +184,7 @@ exports.leaveTeam = async(req,res) => {
         } else {
             return res.status(404).json({ status: "Member not found in any role" });
         }
-        return res.status(200).json({ status: "Successfully left the team"}, team);
+        return res.status(200).json({ status: "Successfully left the team", team});
     } catch(error){
         console.log(error)
         return res.status(500).json(error.message)
@@ -199,7 +199,7 @@ exports.deleteTeam = async(req, res) => {
             return res.status(403).json({message: "Only allowed to team leaders"})
         }
         deleted = await team.remove();
-        return res.status(200).json({ message: "Team deleted successfully" }, deleted);
+        return res.status(200).json({ message: "Team deleted successfully", deleted});
     } catch(error){
         console.log(error)
         return res.status(500).json(error.message)
