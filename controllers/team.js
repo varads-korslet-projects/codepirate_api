@@ -57,6 +57,8 @@ exports.createTeam = async(req,res) => {
             });
             if(clashingTeam){
                 clashingMember = await Member.findOne({id: memberids[i]})
+                console.log(clashingMember)
+                console.log(memberids[i])
                 memberEmail = clashingMember.email
                 return res.status(409).json({message: "Member already in team", memberEmail, clashingTeam})
             }
