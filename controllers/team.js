@@ -153,16 +153,14 @@ exports.updateTeam = async(req,res) => {
             }
         }
         if(team.member3 && !teamData.member3){
-            team.set(member3, undefined);
-            await team.save();
+            teamData.member3 = undefined;
         }
         if(team.member4 && !teamData.member4){
-            team.set(member4, undefined);
-            await team.save();
+            teamData.member4 = undefined;
         }
         team.set(teamData);
         result = await team.save()
-        console.log(teamData)
+        console.log(result)
         return res.status(200).json(result)
     } catch(error) {
         console.error(error);
