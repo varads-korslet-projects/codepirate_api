@@ -47,6 +47,8 @@ exports.createTeam = async(req,res) => {
             }
         }
         for (i in memberids) {
+            console.log(i)
+            console.log(memberids[i])
             clashingTeam = await Team.findOne({
                 $or: [
                     { leader: memberids[i] },
