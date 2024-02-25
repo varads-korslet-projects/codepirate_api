@@ -198,7 +198,7 @@ exports.deleteTeam = async(req, res) => {
         if(!team){
             return res.status(403).json({message: "Only allowed to team leaders"})
         }
-        deleted = await team.remove();
+        const deleted = await Team.deleteOne({ _id: team._id });
         return res.status(200).json({ message: "Team deleted successfully", deleted});
     } catch(error){
         console.log(error)
