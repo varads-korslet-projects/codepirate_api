@@ -20,23 +20,19 @@ exports.createTeam = async(req,res) => {
         if(!member2){
             return res.status(400).json({error:"Please create second member's accounts first"})
         }
-        if(req.body.member3Email){
-            member3 = await Member.findOne({email: req.body.member3Email})
-            return res.status(400).json({error:"Please create third member's accounts first"})
-        }
-        if(req.body.member4Email){
-            member4 = await Member.findOne({email: req.body.member4Email})
-            return res.status(400).json({error:"Please create fourth member's accounts first"})
-        }
         teamEntry = {
             name,
             leader: leader._id,
             member2: member2._id
         }
-        if(member3){
+        if(req.body.member3Email){
+            member3 = await Member.findOne({email: req.body.member3Email})
+            return res.status(400).json({error:"Please create third member's accounts first"})
             teamEntry.member3 = member3._id
         }
-        if(member4){
+        if(req.body.member4Email){
+            member4 = await Member.findOne({email: req.body.member4Email})
+            return res.status(400).json({error:"Please create fourth member's accounts first"})
             teamEntry.member4 = member4._id
         }
         console.log(teamEntry)
