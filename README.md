@@ -33,9 +33,11 @@ npm install pm2 -g
     ```
 
 ## Routes
-- /team
-- /createTeam
-- /changeTeam
-- /deleteTeam
+- /registerMember
 - /login
+- /createTeam
+- /team
+- /changeTeam
 - /leaveTeam
+- /deleteTeam
+### Postman workspace: https://www.postman.com/security-cosmonaut-48402714/workspace/codepirate/collection/32546328-b513a4e3-89ae-4ec2-9f56-3dfdb995465a?action=share&creator=32546328
