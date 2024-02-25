@@ -93,6 +93,7 @@ exports.updateTeam = async(req,res) => {
 exports.login = async(req,res) => {
     const {emailId, password} = req.body;
     if(!emailId || !password){
+        console.log(req.body, emailId, password)
         return res.status(400).json({error: "Bad request"})
     }
     try{
