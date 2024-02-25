@@ -76,6 +76,13 @@ exports.updateTeam = async(req,res) => {
         if(!team){
             return res.status(403).json({message: "Only allowed to team leaders"})
         }
+        teamData.member2 = await Member.findOne({email:teamData.member2Email})._id
+        if(teamData.member3Email){
+            teamData.member3 = await Member.findOne({email:teamData.member3Email})._id
+        }
+        if(teamData.member4Email){
+            teamData.member4 = await Member.findOne({email:teamData.member4Email})._id
+        }
         team.set(teamData);
         result = await team.save()
         console.log(teamData)
