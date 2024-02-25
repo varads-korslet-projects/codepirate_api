@@ -76,12 +76,27 @@ exports.updateTeam = async(req,res) => {
         if(!team){
             return res.status(403).json({message: "Only allowed to team leaders"})
         }
-        teamData.member2 = await Member.findOne({email:teamData.member2Email})._id
+        member2 = await Member.findOne({email:teamData.member2Email})
+        if(member2){
+            teamData.member2 = member2._id;
+        } else {
+            return res.status(404).json({error: "Member 2 hasn't registered"})
+        }
         if(teamData.member3Email){
-            teamData.member3 = await Member.findOne({email:teamData.member3Email})._id
+            member3 = await Member.findOne({email:teamData.member3Email})
+            if(member3){
+                teamData.member3 = member3._id;
+            } else {
+                return res.status(404).json({error: "Member 3 hasn't registered"})
+            }
         }
         if(teamData.member4Email){
-            teamData.member4 = await Member.findOne({email:teamData.member4Email})._id
+            member4 = await Member.findOne({email:teamData.member4Email})
+            if(member4){
+                teamData.member4 = member4._id;
+            } else {
+                return res.status(404).json({error: "Member 4 hasn't registered"})
+            }
         }
         team.set(teamData);
         result = await team.save()
