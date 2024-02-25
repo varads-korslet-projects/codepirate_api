@@ -13,3 +13,5 @@ router.post("/changeTeam",authCheckMember, updateTeam)
 router.delete("/deleteTeam",authCheckMember, deleteTeam)
 router.post("/login", login)
 router.post("/leaveTeam",authCheckMember, leaveTeam)
+
+module.exports = router;
