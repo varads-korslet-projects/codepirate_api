@@ -45,35 +45,37 @@ exports.createTeam = async(req,res) => {
         return res.status(201).json(result)
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 }
 
-exports.getTeam = async(req,res) => {
-    try{
-        member = await Member.findOne({email: request.member.email})
-        team = await Team.findOne({leader: member._id})
-        if(!team){
-            team = await Team.findOne({member2: member._id})
-        }
-        if(!team){
-            team = await Team.findOne({member3: member._id})
-        }
-        if(!team){
-            team = await Team.findOne({member4: member._id})
-        }
-        if(!team){
-            return res.status(404).json({status:"Member not in any team"})
+exports.getTeam = async (req, res) => {
+    try {
+        const member = await Member.findOne({ email: req.member.email });
+
+        const team = await Team.findOne({
+            $or: [
+                { leader: member._id },
+                { member2: member._id },
+                { member3: member._id },
+                { member4: member._id },
+            ],
+        });
+
+        if (!team) {
+            return res.status(404).json({ status: "Member not in any team" });
         } else {
-            return res.status(201).json(team)
+            return res.status(201).json(team);
         }
-    } catch(error){
+    } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
-}
+};
 
-exports.updateTeam = async(req,res) => {}
+exports.updateTeam = async(req,res) => {
+
+}
 
 exports.login = async(req,res) => {
     const {emailId, password} = req.body;
@@ -88,14 +90,14 @@ exports.login = async(req,res) => {
         const match = await bcrypt.compare(password, member.password)
         if(match){
             const token = jwt.sign({ email: member.email, role: "member" },  process.env.signingkey, { expiresIn: '1d' })
-            res.status(201).json({success: "Login successful", token});
+            return res.status(201).json({success: "Login successful", token});
         }
         else{
-            res.status(401).json({error: "Wrong Id or Password"});
+            return res.status(401).json({error: "Wrong Id or Password"});
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 }
 
@@ -121,10 +123,52 @@ exports.createMember = async(req,res) => {
         return res.status(201).json(result)
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 }
 
-exports.leaveTeam = async(req,res) => {}
+exports.leaveTeam = async(req,res) => {
+    member = await Member.findOne({email: req.member.email})
+    try{
+        const team = await Team.findOne({
+            $or: [
+                { leader: member._id },
+                { member2: member._id },
+                { member3: member._id },
+                { member4: member._id },
+            ],
+        });
+        if (!team) {
+            return res.status(404).json({ status: "Member not in any team" });
+        }
+        const roles = ["leader", "member2", "member3", "member4"];
+        const role = roles.find(r => team[r]?.equals(member._id));
+        if (role) {
+            // Set the role field to undefined
+            team.set(role, undefined);
+            // Save the changes to the database
+            await team.save();
+        } else {
+            return res.status(404).json({ status: "Member not found in any role" });
+        }
+        return res.status(200).json({ status: "Successfully left the team"}, team);
+    } catch(error){
+        console.log(error)
+        return res.status(500).json(error.message)
+    }
+}
 
-exports.deleteTeam = as
+exports.deleteTeam = async(req, res) => {
+    teamLeader = Member.findOne({email: req.member.email})
+    try{
+        team = Team.findOne({leader: teamLeader._id})
+        if(!team){
+            return res.status(403).json({message: "Only allowed to team leaders"})
+        }
+        deleted = await team.remove();
+        return res.status(200).json({ message: "Team deleted successfully" }, deleted);
+    } catch(error){
+        console.log(error)
+        return res.status(500).json(error.message)
+    }
+}
