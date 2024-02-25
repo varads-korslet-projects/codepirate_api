@@ -137,9 +137,11 @@ exports.updateTeam = async(req,res) => {
                     { member4: id },
                 ],
             });
-            if(clashingTeam.name != team.name){
-                clashingMember = await Member.findOne({_id:id})
-                return res.status(409).json({message: "Member already in team", clashingMember, clashingTeam})
+            if(clashingTeam){
+                if (clashingTeam.name != team.name){
+                    clashingMember = await Member.findOne({_id:id})
+                    return res.status(409).json({message: "Member already in team", clashingMember, clashingTeam})
+                }
             }
         }
         team.set(teamData);
