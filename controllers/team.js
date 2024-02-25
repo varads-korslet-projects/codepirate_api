@@ -15,11 +15,11 @@ exports.createTeam = async(req,res) => {
         if(team){
             return res.status(409).json({error: "Team with that name already exists"})
         }
-        emails = []
+        memberids = []
         leader = await Member.findOne({email: req.member.email})
-        emails.push(req.member.email) 
+        memberids.push(req.member._id) 
         member2 = await Member.findOne({email: member2Email})
-        emails.push(member2Email)
+        memberids.push(member2._id)
         if(!member2){
             return res.status(400).json({error:"Please create second member's accounts first"})
         }
@@ -32,7 +32,7 @@ exports.createTeam = async(req,res) => {
             member3 = await Member.findOne({email: req.body.member3Email})
             if(member3){
                 teamEntry.member3 = member3._id
-                emails.push(req.body.member3Email)
+                memberids.push(member3._id)
             } else{
                 return res.status(400).json({error:"Please create third member's accounts first"})
             }
@@ -41,19 +41,18 @@ exports.createTeam = async(req,res) => {
             member4 = await Member.findOne({email: req.body.member4Email})
             if(member4){
                 teamEntry.member4 = member4._id
-                emails.push(req.body.member4Email)
+                memberids.push(member4._id)
             } else {
                 return res.status(400).json({error:"Please create fourth member's accounts first"})
             }
         }
-        for (i in emails) {
-            member = await Member.findOne({email: emails[i]})
+        for (i in memberids) {
             clashingTeam = await Team.findOne({
                 $or: [
-                    { leader: emails[i] },
-                    { member2: emails[i] },
-                    { member3: emails[i] },
-                    { member4: emails[i] },
+                    { leader: memberids[i] },
+                    { member2: memberids[i] },
+                    { member3: memberids[i] },
+                    { member4: memberids[i] },
                 ],
             });
             if(clashingTeam){
