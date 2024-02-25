@@ -5,7 +5,48 @@ var mongoose = require('mongoose'),
 const Team = require('../models/team')
 const Member = require('../models/member')
 
-exports.createTeam = async(req,res) => {}
+exports.createTeam = async(req,res) => {
+    const {name, member2Email} = req.body;
+    if(!name||!member2Email){
+        return res.status(400).json({error: "Bad request"})
+    }
+    try{
+        team = await Team.findOne({name})
+        if(team){
+            return res.status(409).json({error: "Team with that name already exists"})
+        }
+        leader = await Member.findOne({email: req.member.email})
+        member2 = await Member.findOne({email: member2Email})
+        if(!member2){
+            return res.status(400).json({error:"Please create second member's accounts first"})
+        }
+        if(req.body.member3Email){
+            member3 = await Member.findOne({email: req.body.member3Email})
+            return res.status(400).json({error:"Please create third member's accounts first"})
+        }
+        if(req.body.member4Email){
+            member4 = await Member.findOne({email: req.body.member4Email})
+            return res.status(400).json({error:"Please create fourth member's accounts first"})
+        }
+        teamEntry = {
+            name,
+            leader: leader._id,
+            member2: member2._id
+        }
+        if(member3){
+            teamEntry.member3 = member3._id
+        }
+        if(member4){
+            teamEntry.member4 = member4._id
+        }
+        console.log(teamEntry)
+        const result = await Team.create(teamEntry)
+        return res.status(201).json(result)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+}
 
 exports.getTeam = async(req,res) => {}
 
@@ -18,7 +59,7 @@ exports.login = async(req,res) => {
     }
     try{
         const member = await Member.findOne({email:emailId});
-        if(!student){
+        if(!member){
             return res.status(404).json({error: "Email ID does not exist!"});
         }
         const match = await bcrypt.compare(password, member.password)
@@ -51,7 +92,7 @@ exports.createMember = async(req,res) => {
         const emailClash = await Member.findOne({email});
         const phoneClash = await Member.findOne({phone});
         if(emailClash||phoneClash){
-            return res.status(409).json({error: "User exists in database"})
+            return res.status(409).json({error: "User already exists in database"})
         }
         const result = await Member.create(memberEntry)
         return res.status(201).json(result)

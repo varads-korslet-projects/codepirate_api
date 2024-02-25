@@ -9,7 +9,7 @@ exports.authCheckMember = async (req, res, next) =>{
         if (err) {
             return res.status(403).json({ error: 'Forbidden - Invalid token' });
         }
-        if(member.role == "student"){
+        if(member.role == "member"){
             req.member = member;
             next();
         }else{

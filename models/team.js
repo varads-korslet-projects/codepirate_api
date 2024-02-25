@@ -7,9 +7,6 @@ const teamSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    hash_password: {
-        type: String
-    },
     leader:{
         type: ObjectId,
         ref: "Member",
