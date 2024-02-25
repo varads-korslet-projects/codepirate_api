@@ -4,7 +4,6 @@ var mongoose = require('mongoose'),
 
 const Team = require('../models/team')
 const Member = require('../models/member');
-const member = require('../models/member');
 
 exports.createTeam = async(req,res) => {
     const {name, member2Email} = req.body;
