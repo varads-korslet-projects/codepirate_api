@@ -3,7 +3,8 @@ var mongoose = require('mongoose'),
   bcrypt = require('bcrypt')
 
 const Team = require('../models/team')
-const Member = require('../models/member')
+const Member = require('../models/member');
+const member = require('../models/member');
 
 exports.createTeam = async(req,res) => {
     const {name, member2Email} = req.body;
@@ -48,7 +49,29 @@ exports.createTeam = async(req,res) => {
     }
 }
 
-exports.getTeam = async(req,res) => {}
+exports.getTeam = async(req,res) => {
+    try{
+        member = await Member.findOne({email: request.member.email})
+        team = await Team.findOne({leader: member._id})
+        if(!team){
+            team = await Team.findOne({member2: member._id})
+        }
+        if(!team){
+            team = await Team.findOne({member3: member._id})
+        }
+        if(!team){
+            team = await Team.findOne({member4: member._id})
+        }
+        if(!team){
+            return res.status(404).json({status:"Member not in any team"})
+        } else {
+            return res.status(201).json(team)
+        }
+    } catch(error){
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+}
 
 exports.updateTeam = async(req,res) => {}
 
