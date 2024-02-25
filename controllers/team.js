@@ -46,6 +46,7 @@ exports.createTeam = async(req,res) => {
                 return res.status(400).json({error:"Please create fourth member's accounts first"})
             }
         }
+        console.log(memberids)
         for (i in memberids) {
             console.log(i)
             console.log(memberids[i])
