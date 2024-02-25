@@ -1,5 +1,20 @@
 # Backend API for codepirate
 
+## Dependencies
+Fedora based Servers:
+```
+sudo yum groupinstall "Development Tools"
+```
+Ubuntu based Servers:
+```
+sudo apt-get update
+sudo apt-get install build-essential
+```
+PM2 process manager:
+```
+npm install pm2 -g
+```
+
 ## Setting up actions 
 - Fork this repository to your own profile/organization
 - Go to settings/Secrets and variables/Actions
