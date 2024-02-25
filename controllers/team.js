@@ -46,7 +46,6 @@ exports.createTeam = async(req,res) => {
                 return res.status(400).json({error:"Please create fourth member's accounts first"})
             }
         }
-        console.log(memberids)
         for (const id of memberids) {
             clashingTeam = await Team.findOne({
                 $or: [
@@ -99,12 +98,15 @@ exports.updateTeam = async(req,res) => {
     teamLeader = await Member.findOne({email: req.member.email})
     try{
         team = await Team.findOne({leader: teamLeader._id})
+        memberids = []
+        memberids.push(teamLeader._id.toString())
         if(!team){
             return res.status(403).json({message: "Only allowed to team leaders"})
         }
         member2 = await Member.findOne({email:teamData.member2Email})
         if(member2){
             teamData.member2 = member2._id;
+            memberids.push(member2._id.toString())
         } else {
             return res.status(404).json({error: "Member 2 hasn't registered"})
         }
@@ -112,6 +114,7 @@ exports.updateTeam = async(req,res) => {
             member3 = await Member.findOne({email:teamData.member3Email})
             if(member3){
                 teamData.member3 = member3._id;
+                memberids.push(member3._id.toString())
             } else {
                 return res.status(404).json({error: "Member 3 hasn't registered"})
             }
@@ -120,8 +123,23 @@ exports.updateTeam = async(req,res) => {
             member4 = await Member.findOne({email:teamData.member4Email})
             if(member4){
                 teamData.member4 = member4._id;
+                memberids.push(member4._id.toString())
             } else {
                 return res.status(404).json({error: "Member 4 hasn't registered"})
+            }
+        }
+        for (const id of memberids) {
+            clashingTeam = await Team.findOne({
+                $or: [
+                    { leader: id },
+                    { member2: id },
+                    { member3: id },
+                    { member4: id },
+                ],
+            });
+            if(clashingTeam){
+                clashingMember = await Member.findOne({_id:id})
+                return res.status(409).json({message: "Member already in team", clashingMember, clashingTeam})
             }
         }
         team.set(teamData);
