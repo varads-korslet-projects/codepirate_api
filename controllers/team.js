@@ -120,12 +120,13 @@ exports.createMember = async(req,res) => {
         return res.status(400).json({error: "Bad request"})
     }
     try{
+        hashed_password = bcrypt.hashSync(password, 10);
         memberEntry = {
             name,
             email,
             phone,
             collegeName,
-            password
+            password: hashed_password
         }
         const emailClash = await Member.findOne({email});
         const phoneClash = await Member.findOne({phone});
