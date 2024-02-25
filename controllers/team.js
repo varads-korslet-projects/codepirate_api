@@ -15,8 +15,11 @@ exports.createTeam = async(req,res) => {
         if(team){
             return res.status(409).json({error: "Team with that name already exists"})
         }
+        emails = []
         leader = await Member.findOne({email: req.member.email})
+        emails.push(req.member.email) 
         member2 = await Member.findOne({email: member2Email})
+        emails.push(member2Email)
         if(!member2){
             return res.status(400).json({error:"Please create second member's accounts first"})
         }
@@ -27,13 +30,35 @@ exports.createTeam = async(req,res) => {
         }
         if(req.body.member3Email){
             member3 = await Member.findOne({email: req.body.member3Email})
-            return res.status(400).json({error:"Please create third member's accounts first"})
-            teamEntry.member3 = member3._id
+            if(member3){
+                teamEntry.member3 = member3._id
+                emails.push(req.body.member3Email)
+            } else{
+                return res.status(400).json({error:"Please create third member's accounts first"})
+            }
         }
         if(req.body.member4Email){
             member4 = await Member.findOne({email: req.body.member4Email})
-            return res.status(400).json({error:"Please create fourth member's accounts first"})
-            teamEntry.member4 = member4._id
+            if(member4){
+                teamEntry.member4 = member4._id
+                emails.push(req.body.member4Email)
+            } else {
+                return res.status(400).json({error:"Please create fourth member's accounts first"})
+            }
+        }
+        for (i in emails) {
+            member = await Member.findOne({email: emails[i]})
+            clashingTeam = await Team.findOne({
+                $or: [
+                    { leader: emails[i] },
+                    { member2: emails[i] },
+                    { member3: emails[i] },
+                    { member4: emails[i] },
+                ],
+            });
+            if(clashingTeam){
+                return res.status(409).json({message: "Member already in team", email: emails[i], clashingTeam})
+            }
         }
         console.log(teamEntry)
         const result = await Team.create(teamEntry)
