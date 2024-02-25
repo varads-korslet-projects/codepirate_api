@@ -13,6 +13,9 @@ exports.updateTeam = async(req,res) => {}
 
 exports.login = async(req,res) => {
     const {emailId, password} = req.body;
+    if(!emailId || !password){
+        return res.status(400).json({error: "Bad request"})
+    }
     try{
         const member = await Member.findOne({email:emailId});
         if(!student){
@@ -28,7 +31,33 @@ exports.login = async(req,res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error });
+        res.status(500).json({ error: error.message });
+    }
+}
+
+exports.createMember = async(req,res) => {
+    const {name, email, phone, collegeName, password} = req.body;
+    if(!name||!email||!phone||!collegeName||!password){
+        return res.status(400).json({error: "Bad request"})
+    }
+    try{
+        memberEntry = {
+            name,
+            email,
+            phone,
+            collegeName,
+            password
+        }
+        const emailClash = await Member.findOne({email});
+        const phoneClash = await Member.findOne({phone});
+        if(emailClash||phoneClash){
+            return res.status(409).json({error: "User exists in database"})
+        }
+        const result = await Member.create(memberEntry)
+        return res.status(201).json(result)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
 }
 
