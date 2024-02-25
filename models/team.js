@@ -22,11 +22,13 @@ const teamSchema = new mongoose.Schema({
         type: ObjectId,
         ref: "Member",
         required: false,
+        unique: false
     },
     member4:{
         type: ObjectId,
         ref: "Member",
         required: false,
+        unique: false
     },
 },
 {timestamps:true}
