@@ -65,7 +65,7 @@ exports.getTeam = async (req, res) => {
         if (!team) {
             return res.status(404).json({ status: "Member not in any team" });
         } else {
-            return res.status(201).json(team);
+            return res.status(200).json(team);
         }
     } catch (error) {
         console.error(error);
@@ -74,7 +74,21 @@ exports.getTeam = async (req, res) => {
 };
 
 exports.updateTeam = async(req,res) => {
-
+    teamData = req.body
+    teamLeader = await Member.findOne({email: req.member.email})
+    try{
+        team = await Team.findOne({leader: teamLeader._id})
+        if(!team){
+            return res.status(403).json({message: "Only allowed to team leaders"})
+        }
+        team.set(teamData);
+        result = await team.save()
+        console.log(teamData)
+        return res.status(200).json(result)
+    } catch(error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
 }
 
 exports.login = async(req,res) => {
@@ -90,7 +104,7 @@ exports.login = async(req,res) => {
         const match = await bcrypt.compare(password, member.password)
         if(match){
             const token = jwt.sign({ email: member.email, role: "member" },  process.env.signingkey, { expiresIn: '1d' })
-            return res.status(201).json({success: "Login successful", token});
+            return res.status(200).json({success: "Login successful", token});
         }
         else{
             return res.status(401).json({error: "Wrong Id or Password"});
@@ -159,9 +173,9 @@ exports.leaveTeam = async(req,res) => {
 }
 
 exports.deleteTeam = async(req, res) => {
-    teamLeader = Member.findOne({email: req.member.email})
+    teamLeader = await Member.findOne({email: req.member.email})
     try{
-        team = Team.findOne({leader: teamLeader._id})
+        team = await Team.findOne({leader: teamLeader._id})
         if(!team){
             return res.status(403).json({message: "Only allowed to team leaders"})
         }
