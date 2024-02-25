@@ -17,7 +17,7 @@ exports.createTeam = async(req,res) => {
         }
         memberids = []
         leader = await Member.findOne({email: req.member.email})
-        memberids.push(leader._id) 
+        memberids.push(leader._id)
         member2 = await Member.findOne({email: member2Email})
         memberids.push(member2._id)
         if(!member2){
@@ -48,22 +48,18 @@ exports.createTeam = async(req,res) => {
         }
         console.log(memberids)
         for (i in memberids) {
-            console.log(i)
-            console.log(memberids[i])
+            const memberId = mongoose.Types.ObjectId(memberids[i]);
             clashingTeam = await Team.findOne({
                 $or: [
-                    { leader: memberids[i] },
-                    { member2: memberids[i] },
-                    { member3: memberids[i] },
-                    { member4: memberids[i] },
+                    { leader: memberId },
+                    { member2: memberId },
+                    { member3: memberId },
+                    { member4: memberId },
                 ],
             });
             if(clashingTeam){
-                clashingMember = await Member.findOne({id: memberids[i]})
-                console.log(clashingMember)
-                console.log(memberids[i])
-                memberEmail = clashingMember.email
-                return res.status(409).json({message: "Member already in team", memberEmail, clashingTeam})
+                clashingMember = await Member.findOne({id: memberId})
+                return res.status(409).json({message: "Member already in team", clashingMember, clashingTeam})
             }
         }
         console.log(teamEntry)
